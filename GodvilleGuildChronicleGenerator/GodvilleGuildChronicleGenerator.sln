@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodvilleGuildChronicleGenerator", "GodvilleGuildChronicleGenerator.csproj", "{A82010C6-4ABB-4891-9499-9F863886D3EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A82010C6-4ABB-4891-9499-9F863886D3EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A82010C6-4ABB-4891-9499-9F863886D3EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A82010C6-4ABB-4891-9499-9F863886D3EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A82010C6-4ABB-4891-9499-9F863886D3EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5514975E-9D3B-4789-BD2C-B89AF7E67C06}
+	EndGlobalSection
+EndGlobal
