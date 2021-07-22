@@ -9,6 +9,13 @@ namespace GodvilleGuildChronicleGenerator
     /// </summary>
     public class GuildPageParser
     {
+        private GuildPageStructureSettings _guildPageStructureSettings;
+
+        public GuildPageParser(AppSettings settings)
+        {
+            _guildPageStructureSettings = settings.guildPageStructureSettings;
+        }
+
         /// <summary>
         /// Парсинг текста страницы гильдии, чтобы выбрать информацию о божествах.
         /// </summary>
@@ -17,57 +24,36 @@ namespace GodvilleGuildChronicleGenerator
         public List<God> Parse(string guildPageText)
         {
             var godsList = new List<God>();
-
-            // структура блока информации о божестве на 26.05.2021
-            //        <tr >
-            //			<td>1</td>
-            //			<td><a href="/gods/%D0%9A%D0%B2%D0%B5%D1%80%D1%86" onclick="window.open(this.href);return false;">Кверц</a>
-            //				<span class='t_award_w'><span class=' t_award_bgx t_awm' title='庙 - Храмовник с 19.01.2014 00:13
-            //舟 - Корабел c 23.02.2015 14:58
-            //畜 - Зверовод с 06.07.2014 15:03
-            //商 - Лавочник с 01.06.2020 15:02
-            //馴 - Тваревед с 03.12.2017 03:31'><span style='display:none;' class='t_award_d'><div style='display:block;'><span class='t_award_small t_award_bg1'>庙</span><span class='t_award_dt'>Храмовник с 19.01.2014 00:13</span></div><div style='display:block;'><span class='t_award_small t_award_bg1'>舟</span><span class='t_award_dt'>Корабел c 23.02.2015 14:58</span></div><div style='display:block;'><span class='t_award_small t_award_bg1'>畜</span><span class='t_award_dt'>Зверовод с 06.07.2014 15:03</span></div><div style='display:block;'><span class='t_award_small t_award_bg1'>商</span><span class='t_award_dt'>Лавочник с 01.06.2020 15:02</span></div><div style='display:block;'><span class='t_award_small t_award_bg1'>馴</span><span class='t_award_dt'>Тваревед с 03.12.2017 03:31</span></div></span><span>5</span></span></span>
-            //				</td>
-            //			<td>Кверцер</td>
-            //			<td>
-
-            //					Дайте воЙна! [☭] 🦊</td>
-
-            //			<td class="tdc">134</td>
-            //			<td>добродушный</td>
-            //			<td>фырфыраон</td>
-            //		</tr>
-            var listStartPosition = guildPageText.IndexOf(GuildPageStructureDefaultStrings.DefaultListStart);
+            
+            var listStartPosition = guildPageText.IndexOf(_guildPageStructureSettings.ListStart);
 
             if (listStartPosition == -1)
                 throw new Exception("Не найдена таблица с составом гильдии");
 
-            var cursorPosition = guildPageText.IndexOf(GuildPageStructureDefaultStrings.DefaultRawGodInfoBegin, listStartPosition);
+            var cursorPosition = guildPageText.IndexOf(_guildPageStructureSettings.RawGodInfoBegin, listStartPosition);
             while (cursorPosition != -1)
             {
-                var rawGodInfo = guildPageText.Substring(cursorPosition, guildPageText.IndexOf(GuildPageStructureDefaultStrings.DefaultRawGodInfoEnd, cursorPosition) - cursorPosition);
-
-                // <a href="/gods/%D0%9A%D0%B2%D0%B5%D1%80%D1%86" onclick="window.open(this.href);return false;">Кверц</a>
-                var godNameBeginPosition = rawGodInfo.IndexOf(GuildPageStructureDefaultStrings.DefaultGodNameBegin);
+                var rawGodInfo = guildPageText.Substring(cursorPosition, guildPageText.IndexOf(_guildPageStructureSettings.RawGodInfoEnd, cursorPosition) - cursorPosition);
+                
+                var godNameBeginPosition = rawGodInfo.IndexOf(_guildPageStructureSettings.GodNameBegin);
                 if (godNameBeginPosition == -1)
                     throw new Exception("Не найдена начальная строка для выбора имени божества");
 
-                godNameBeginPosition += GuildPageStructureDefaultStrings.DefaultGodNameBegin.Length;
+                godNameBeginPosition += _guildPageStructureSettings.GodNameBegin.Length;
 
-                var godNameEndPosition = rawGodInfo.IndexOf(GuildPageStructureDefaultStrings.DefaultGodNameEnd, godNameBeginPosition);
+                var godNameEndPosition = rawGodInfo.IndexOf(_guildPageStructureSettings.GodNameEnd, godNameBeginPosition);
                 if (godNameEndPosition == -1)
                     throw new Exception("Не найдена конечная строка для выбора имени божества");
 
                 var godName = rawGodInfo.Substring(godNameBeginPosition, godNameEndPosition - godNameBeginPosition);
 
-                // <td>Кверцер</td>
-                var heroNameBeginPosition = rawGodInfo.IndexOf(GuildPageStructureDefaultStrings.DefaultHeroNameBegin, godNameEndPosition);
+                var heroNameBeginPosition = rawGodInfo.IndexOf(_guildPageStructureSettings.HeroNameBegin, godNameEndPosition);
                 if (heroNameBeginPosition == -1)
                     throw new Exception("Не найдена начальная строка для выбора имени героя");
 
-                heroNameBeginPosition += GuildPageStructureDefaultStrings.DefaultHeroNameBegin.Length;
+                heroNameBeginPosition += _guildPageStructureSettings.HeroNameBegin.Length;
 
-                var heroNameEndPosition = rawGodInfo.IndexOf(GuildPageStructureDefaultStrings.DefaultHeroNameEnd, heroNameBeginPosition);
+                var heroNameEndPosition = rawGodInfo.IndexOf(_guildPageStructureSettings.HeroNameEnd, heroNameBeginPosition);
                 if (heroNameEndPosition == -1)
                     throw new Exception("Не найдена конечная строка для выбора имени героя");
 
@@ -77,7 +63,7 @@ namespace GodvilleGuildChronicleGenerator
 
                 godsList.Add(new God { Name = godName, HeroName = heroName, TempleDate = templeDate, ArkDate = arkDate, PetDate = petDate, BeastDate = beastDate, ShopDate = shopDate });
 
-                cursorPosition = guildPageText.IndexOf(GuildPageStructureDefaultStrings.DefaultRawGodInfoBegin, ++cursorPosition);
+                cursorPosition = guildPageText.IndexOf(_guildPageStructureSettings.RawGodInfoBegin, ++cursorPosition);
             }
 
             return godsList;
@@ -96,19 +82,17 @@ namespace GodvilleGuildChronicleGenerator
         {
             templeDate = arkDate = petDate = beastDate = shopDate = null;
 
-            //<div style='display:block;'><span class='t_award_small t_award_bg1'>庙</span><span class='t_award_dt'>Храмовник с 19.01.2014 00:13</span></div><div style='display:block;'><span class='t_award_small t_award_bg1'>舟</span><span class='t_award_dt'>Корабел c 23.02.2015 14:58</span></div><div style='display:block;'><span class='t_award_small t_award_bg1'>畜</span><span class='t_award_dt'>Зверовод с 06.07.2014 15:03</span></div><div style='display:block;'><span class='t_award_small t_award_bg1'>商</span><span class='t_award_dt'>Лавочник с 01.06.2020 15:02</span></div><div style='display:block;'><span class='t_award_small t_award_bg1'>馴</span><span class='t_award_dt'>Тваревед с 03.12.2017 03:31</span></div></span><span>5</span></span></span>
-            var awardCursorPosition = rawGodInfo.IndexOf(GuildPageStructureDefaultStrings.DefaultAwardBegin);
+            var awardCursorPosition = rawGodInfo.IndexOf(_guildPageStructureSettings.AwardBegin);
 
             // медалей у бога может и не быть
-            // TODO: проверка на наличие медалей
             if (awardCursorPosition == -1)
                 return;
 
             while (awardCursorPosition != -1)
             {
-                awardCursorPosition += GuildPageStructureDefaultStrings.DefaultAwardBegin.Length;
+                awardCursorPosition += _guildPageStructureSettings.AwardBegin.Length;
 
-                var awardEndPosition = rawGodInfo.IndexOf(GuildPageStructureDefaultStrings.DefaultAwardEnd, awardCursorPosition);
+                var awardEndPosition = rawGodInfo.IndexOf(_guildPageStructureSettings.AwardEnd, awardCursorPosition);
                 if (awardEndPosition == -1)
                     throw new Exception("Не найдена конечная строка для поиска информации о медали");
 
@@ -130,7 +114,7 @@ namespace GodvilleGuildChronicleGenerator
                 else if (rawAwardInfo.IndexOf("Лавочник") != -1)
                     shopDate = awardDate;
 
-                awardCursorPosition = rawGodInfo.IndexOf(GuildPageStructureDefaultStrings.DefaultAwardBegin, awardCursorPosition);
+                awardCursorPosition = rawGodInfo.IndexOf(_guildPageStructureSettings.AwardBegin, awardCursorPosition);
             }
         }
     }
