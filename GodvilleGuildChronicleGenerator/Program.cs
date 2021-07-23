@@ -6,8 +6,9 @@ namespace GodvilleGuildChronicleGenerator
     {
         static void Main(string[] args)
         {
-            var pageText = File.ReadAllText("page.html");
-            var parser = new GuildPageParser();
+            var appSettings = new AppSettingsManager().LoadSettings();
+            var pageText = File.ReadAllText(appSettings.guildPageFilePath);
+            var parser = new GuildPageParser(appSettings);
             parser.Parse(pageText);
         }
     }
