@@ -9,6 +9,7 @@ namespace GodvilleGuildChronicleGenerator
 
         public AppSettings LoadSettings()
         {
+            /// создаём шаблон файла настроек, заполняем по умолчанию
             if (!File.Exists(configPath))
                 SaveDefaultSettings();
 
@@ -16,12 +17,19 @@ namespace GodvilleGuildChronicleGenerator
             return JsonConvert.DeserializeObject<AppSettings>(rawSettings);
         }
 
+        /// <summary>
+        /// Сохранение настроек
+        /// </summary>
+        /// <param name="appSettings">Настройки</param>
         public void SaveSettings(AppSettings appSettings)
         {
             var settingsStr = JsonConvert.SerializeObject(appSettings, Formatting.Indented);
             File.WriteAllText(configPath, settingsStr);
         }
 
+        /// <summary>
+        /// Сохранение настроек по умолчанию, см <see cref="GuildPageStructureDefaultStrings"/>
+        /// </summary>
         private void SaveDefaultSettings()
         {
             var guildPageStructureSettings = new GuildPageStructureSettings
@@ -43,8 +51,7 @@ namespace GodvilleGuildChronicleGenerator
                 guildPageStructureSettings = guildPageStructureSettings
             };
 
-            var settingsStr = JsonConvert.SerializeObject(defaultSettings, Formatting.Indented);
-            File.WriteAllText(configPath, settingsStr);
+            SaveSettings(defaultSettings);
         }
     }
 }
